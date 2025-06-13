@@ -1,243 +1,400 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achords Create</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        canvas {
-            border: 2px solid #000;
-            background-color: #fff;
-        }
-        .snackbar {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgb(66, 188, 119);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(86, 255, 159, 0.1);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .snackbar.show {
-            opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            #canvas-container {
-                margin-bottom: 12rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Achords Create</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    canvas {
+      border: 1px solid #000;
+    }
+    .snackbar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #10b981;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      z-index: 50;
+    }
+    .snackbar.show {
+      opacity: 1;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
-    <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-800 text-center">Achords Create</h1>
+<body class="bg-gradient-to-br from-gray-100 via-white to-gray-200 text-gray-800 min-h-screen flex flex-col items-center p-4">
 
-    <div class="flex flex-col md:flex-row md:space-x-6 w-full max-w-6xl m-8">
-        <!-- Formulário -->
-        <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg flex flex-col items-center w-full md:w-1/2">
-            <label for="acorde" class="text-gray-700 mb-2">Nome do Acorde:</label>
-            <input type="text" id="acorde" placeholder="Ex: C, D, E..." 
-                   class="border border-gray-300 rounded px-4 py-2 mb-4 w-full text-lg" oninput="desenharAcorde()" style="text-transform: capitalize;">
+<header class="w-full max-w-7xl mb-6">
+  <h1 class="text-4xl font-bold text-center text-gray-800">🎸 Achords Create</h1>
+</header>
 
-            <label for="casa" class="text-gray-700 mb-2">Casa Inicial:</label>
-            <input type="number" id="casa" min="1" placeholder="1" 
-                   class="border border-gray-300 rounded px-4 py-2 mb-4 w-full text-lg" oninput="desenharAcorde()">
-
-            <div class="flex items-center mb-4">
-                <input type="checkbox" id="pestanaToggle" class="mr-2" onchange="togglePestana()">
-                <label for="pestanaToggle" class="text-gray-700">Adicionar Pestana?</label>
-            </div>
-
-            <div id="pestanaConfig" class="hidden flex flex-col items-center w-full">
-                <label for="pestanaCasa" class="text-gray-700 mb-2">Casa da Pestana:</label>
-                <input type="number" id="pestanaCasa" min="1" placeholder="1" 
-                       class="border border-gray-300 rounded px-4 py-2 mb-4 w-full text-lg" oninput="desenharAcorde()">
-                <label for="pestanaCorda" class="text-gray-700 mb-2">Corda Inicial da Pestana:</label>
-                <input type="number" id="pestanaCorda" min="1" max="6" placeholder="1" 
-                       class="border border-gray-300 rounded px-4 py-2 mb-4 w-full text-lg" oninput="desenharAcorde()">
-            </div>
-
-            <div class="flex space-x-4 w-full">
-                <button onclick="limparAcorde()" 
-                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-1/2">
-                    Limpar Acorde
-                </button>
-                <button id="copiarBtn" onclick="copiarDesenho()" 
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-1/2">
-                    Copiar Acorde
-                </button>
-            </div>
-        </div>
-
-        <!-- Canvas -->
-        <div id="canvas-container" class="mt-6 md:mt-0 w-full md:w-1/2 flex justify-center">
-            <canvas id="canvas" class="rounded-lg shadow-lg" style="max-width: 100%; height: auto;" width="350" height="500"></canvas>
-        </div>
+<main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl">
+  <section class="bg-white rounded-xl shadow-lg p-6 flex flex-col gap-4">
+    <div>
+      <label class="block font-semibold mb-1 text-gray-600">Nome do Acorde:</label>
+      <input type="text" id="acorde" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Ex: C, D#m..." oninput="desenharAcorde()" style="text-transform: capitalize;">
     </div>
 
-    <!-- Snackbar -->
-    <div id="snackbar" class="snackbar">Acorde copiado!</div>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-600">Casa Inicial:</label>
+      <input type="number" id="casa" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="1" oninput="desenharAcorde()">
+    </div>
 
-    <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        const largura = 250;
-        const altura = 300;
-        const espacamento = 50;
-        const cordas = 6;
-        const trastes = 5;
-        const dedos = [];
-        let pestana = null;
-        const topoCordas = [0, 0, 0, 0, 0, 0]; // Estado das bolinhas iniciais
+    <div class="flex items-center gap-2">
+      <input type="checkbox" id="pestanaToggle" class="accent-blue-500" onchange="togglePestana()">
+      <label for="pestanaToggle" class="text-gray-700">Adicionar Pestana?</label>
+    </div>
 
-        function togglePestana() {
-            const pestanaConfig = document.getElementById("pestanaConfig");
-            const checked = document.getElementById("pestanaToggle").checked;
-            if (checked) {
-                pestanaConfig.classList.remove("hidden");
+    <div id="pestanaConfig" class="hidden grid grid-cols-1 gap-2">
+      <div>
+        <label class="block font-semibold mb-1 text-gray-600">Casa da Pestana:</label>
+        <input type="number" id="pestanaCasa" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="desenharAcorde()">
+      </div>
+      <div>
+        <label class="block font-semibold mb-1 text-gray-600">Corda Inicial da Pestana:</label>
+        <input type="number" id="pestanaCorda" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="desenharAcorde()">
+      </div>
+    </div>
+
+    <div class="flex justify-center mt-4">
+      <canvas id="canvas" width="350" height="500" class="rounded-lg shadow-lg border border-gray-300"></canvas>
+    </div>
+
+    <div class="flex flex-wrap gap-3 justify-between mt-6">
+      <button onclick="limparAcorde()" class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">🧹 Limpar</button>
+      <button onclick="copiarDesenho()" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">📋 Copiar</button>
+      <button onclick="baixarImagem()" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition">⬇️ Download</button>
+    </div>
+
+    <button onclick="salvarAcorde()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white w-full py-3 rounded-lg font-semibold transition">💾 Salvar Acorde</button>
+  </section>
+
+  <section class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+    <label class="font-semibold mb-2 text-gray-600">🔍 Buscar acorde:</label>
+    <input type="text" id="buscaAcorde" placeholder="Digite o nome..." oninput="filtrarLista()" class="mb-4 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+    <div id="listaAcordesContainer" class="space-y-3 overflow-auto max-h-[600px] pr-1"></div>
+  </section>
+</main>
+
+<div id="snackbar" class="snackbar">Ação realizada!</div>
+
+  <script>
+
+    let acordesDB = [];
+    let indiceEditando = null;
+    let nomeEditando = null;
+
+    fetch("acordes.json")
+      .then(res => res.json())
+      .then(data => {
+        acordesDB = data;
+        atualizarLista();
+      });
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const largura = 250, altura = 300, espacamento = 50;
+    const cordas = 6, trastes = 5;
+    let dedos = [], topoCordas = [0, 0, 0, 0, 0, 0];
+
+    function togglePestana() {
+      const checked = document.getElementById("pestanaToggle").checked;
+      const config = document.getElementById("pestanaConfig");
+
+      if (checked) {
+        config.classList.remove("hidden");
+      } else {
+        config.classList.add("hidden");
+        // Limpa os valores da pestana
+        document.getElementById("pestanaCasa").value = "";
+        document.getElementById("pestanaCorda").value = "";
+      }
+
+      desenharAcorde();
+    }
+
+    function desenharAcorde() {
+      const nome = document.getElementById("acorde").value;
+      const casa = parseInt(document.getElementById("casa").value) || 1;
+      const pestanaCasa = parseInt(document.getElementById("pestanaCasa")?.value) || null;
+      const pestanaCorda = parseInt(document.getElementById("pestanaCorda")?.value) || null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "28px Arial";
+      ctx.fillStyle = "#333";
+      ctx.textAlign = "center";
+      ctx.fillText(nome, canvas.width / 2, 50);
+      ctx.font = "18px Arial";
+      ctx.textAlign = "start";
+      ctx.fillText(casa + "", 10, 75);
+      for (let i = 0; i <= trastes; i++) {
+        ctx.beginPath();
+        ctx.moveTo(50, 100 + i * espacamento);
+        ctx.lineTo(50 + largura, 100 + i * espacamento);
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = i === 0 ? 8 : 2;
+        ctx.stroke();
+      }
+      for (let i = 0; i < cordas; i++) {
+        const x = 50 + i * (largura / (cordas - 1));
+        ctx.beginPath();
+        ctx.moveTo(x, 100);
+        ctx.lineTo(x, 100 + altura);
+        ctx.stroke();
+        desenharBolinhasBase(i);
+      }
+      if (pestanaCasa && pestanaCorda) {
+        const y = 100 + (pestanaCasa - 1) * espacamento + espacamento / 2;
+        const xStart = 50 + (pestanaCorda - 1) * (largura / (cordas - 1));
+        const xEnd = 50 + largura;
+        ctx.fillRect(xStart, y - 6, xEnd - xStart, 12);
+      }
+      dedos.forEach((d, i) => {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 16, 0, Math.PI * 2);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(d.finger, d.x, d.y);
+      });
+    }
+
+    function desenharBolinhasBase(corda) {
+      const x = 50 + corda * (largura / (cordas - 1));
+      const y = 100 + altura + 20;
+      ctx.beginPath();
+      if (topoCordas[corda] === 0) {
+        ctx.strokeStyle = "black";
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (topoCordas[corda] === 1) {
+        ctx.fillStyle = "black";
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = "black";
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("X", x, y);
+      }
+    }
+
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      const corda = Math.round((x - 50) / (largura / (cordas - 1)));
+      if (y >= 100 + altura + 10 && y <= 100 + altura + 30) topoCordas[corda] = (topoCordas[corda] + 1) % 3;
+      else adicionarDedo(x, y);
+      desenharAcorde();
+    });
+
+    canvas.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      dedos = dedos.filter(d => Math.abs(d.x - x) > 15 || Math.abs(d.y - y) > 15);
+      desenharAcorde();
+    });
+
+    function adicionarDedo(x, y) {
+      const casaY = Math.floor((y - 100) / espacamento) * espacamento + 100 + espacamento / 2;
+      const cordaX = Math.round((x - 50) / (largura / (cordas - 1))) * (largura / (cordas - 1)) + 50;
+      dedos.push({ x: cordaX, y: casaY, finger: dedos.length + 1 });
+    }
+
+    function limparAcorde() {
+      dedos = [];
+      topoCordas.fill(0);
+      desenharAcorde();
+    }
+
+    function copiarDesenho() {
+      canvas.toBlob(blob => {
+        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        mostrarSnackbar("Acorde copiado!");
+      });
+    }
+
+    function baixarImagem() {
+      const link = document.createElement('a');
+      link.download = 'acorde.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function mostrarSnackbar(msg) {
+      const el = document.getElementById("snackbar");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 3000);
+    }
+
+    function salvarAcorde() {
+      const nome = document.getElementById("acorde").value.trim();
+      if (!nome) return alert("Informe o nome do acorde.");
+
+      const casa = parseInt(document.getElementById("casa").value) || 1;
+      const pestanaCasa = document.getElementById("pestanaCasa").value;
+      const pestanaCorda = document.getElementById("pestanaCorda").value;
+
+      // Tentando atualizar acorde do acordesDB
+      if (indiceEditando !== null && nomeEditando === nome) {
+        const acordeIndex = acordesDB.findIndex(
+          a => a.name === nome && a.variation === indiceEditando
+        );
+
+        if (acordeIndex !== -1) {
+          const frets = [];
+          const fingers = [];
+
+          for (let i = 0; i < 6; i++) {
+            const x = 50 + i * (largura / (cordas - 1));
+            const dedo = dedos.find(d => Math.abs(d.x - x) < 10);
+
+            if (topoCordas[i] === 2) {
+              frets.push("x");
+              fingers.push("0");
+            } else if (topoCordas[i] === 0) {
+              frets.push("0");
+              fingers.push("0");
+            } else if (dedo) {
+              const casaRelativa = Math.round((dedo.y - 100 - espacamento / 2) / espacamento);
+              const fretAbs = casa + casaRelativa;
+              frets.push(fretAbs.toString(36));
+              fingers.push(dedo.finger || "1");
             } else {
-                pestanaConfig.classList.add("hidden");
-                pestana = null;
-                desenharAcorde();
+              frets.push("0");
+              fingers.push("0");
             }
+          }
+
+          acordesDB[acordeIndex].frets = frets.join("");
+          acordesDB[acordeIndex].fingers = fingers.join("");
+          acordesDB[acordeIndex].barres = pestanaCasa ? parseInt(pestanaCasa) : "";
+          acordesDB[acordeIndex].capo = pestanaCasa ? true : false;
+
+          mostrarSnackbar("Acorde editado!");
+          atualizarLista();
+
+          // Reset de edição
+          indiceEditando = null;
+          nomeEditando = null;
+          return;
         }
+      }
 
-        function desenharAcorde() {
-            const acorde = document.getElementById("acorde").value;
-            const casaInicial = parseInt(document.getElementById("casa").value) || 1;
-            const pestanaCasa = parseInt(document.getElementById("pestanaCasa")?.value) || null;
-            const pestanaCorda = parseInt(document.getElementById("pestanaCorda")?.value) || null;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Nome do Acorde - Centralizado com Padding Bottom
-            ctx.font = "28px Arial";
-            ctx.fillStyle = "#333";
-            ctx.textAlign = "center";
-            ctx.fillText(acorde, canvas.width / 2, 50);
+      // Caso não esteja editando, salva localmente
+      const dados = {
+        dedos,
+        topoCordas,
+        casa,
+        pestanaCasa,
+        pestanaCorda
+      };
 
-            // Exibir o Número da Casa Inicial
-            ctx.font = "18px Arial";
-            ctx.fillStyle = "#000";
-            ctx.textAlign = "start";
-            ctx.fillText(casaInicial + "", 10, 75);
+      localStorage.setItem(`acorde-${nome}`, JSON.stringify(dados));
+      atualizarLista();
+      mostrarSnackbar("Acorde salvo!");
+    }
 
-            // Desenho do Diagrama
-            for (let i = 0; i <= trastes; i++) {
-                ctx.beginPath();
-                ctx.moveTo(50, 100 + i * espacamento);
-                ctx.lineTo(50 + largura, 100 + i * espacamento);
-                ctx.strokeStyle = "#000";
-                ctx.lineWidth = i === 0 ? 4 : 2;
-                ctx.stroke();
-            }
-            for (let i = 0; i < cordas; i++) {
-                ctx.beginPath();
-                ctx.moveTo(50 + i * (largura / (cordas - 1)), 100);
-                ctx.lineTo(50 + i * (largura / (cordas - 1)), 100 + altura);
-                ctx.strokeStyle = "#000";
-                ctx.lineWidth = 2;
-                ctx.stroke();
+    function atualizarLista() {
+      const container = document.getElementById("listaAcordesContainer");
+      container.innerHTML = "";
 
-                // Bolinhas abaixo do acorde
-                desenharBolinhasBase(i);
-            }
+      const agrupados = {};
+      acordesDB.forEach(acorde => {
+        if (!agrupados[acorde.name]) agrupados[acorde.name] = [];
+        agrupados[acorde.name].push(acorde);
+      });
 
-            // Desenho da Pestana
-            if (pestanaCasa && pestanaCorda) {
-                const y = 100 + (pestanaCasa - 1) * espacamento;
-                const xStart = 50 + (pestanaCorda - 1) * (largura / (cordas - 1));
-                const xEnd = 50 + largura;
-                ctx.beginPath();
-                ctx.fillStyle = "black";
-                ctx.fillRect(xStart, y - 6, xEnd - xStart, 12);
-            }
+      Object.entries(agrupados).forEach(([nome, variacoes]) => {
+        const div = document.createElement("div");
+        div.className = "border rounded p-2 shadow bg-white";
+        div.innerHTML = `
+          <span class="font-bold">${nome}</span>
+          <div class="flex flex-wrap gap-1 mt-2">
+            ${variacoes.map((v, i) => `
+              <button class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm"
+                onclick='desenharShape(${JSON.stringify(v)})'>
+                V${v.variation}
+              </button>
+            `).join("")}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-            // Desenho dos Dedos Adicionados
-            dedos.forEach(dedo => {
-                ctx.beginPath();
-                ctx.arc(dedo.x, dedo.y, 12, 0, Math.PI * 2);
-                ctx.fillStyle = "black";
-                ctx.fill();
-                ctx.font = "18px Arial";
-                ctx.fillStyle = "white";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(dedo.finger, dedo.x, dedo.y);
-            });
+    function editarAcorde(nome) {
+      const dados = JSON.parse(localStorage.getItem(`acorde-${nome}`));
+      document.getElementById("acorde").value = nome;
+      document.getElementById("casa").value = dados.casa;
+      document.getElementById("pestanaCasa").value = dados.pestanaCasa;
+      document.getElementById("pestanaCorda").value = dados.pestanaCorda;
+      dedos = dados.dedos;
+      topoCordas = dados.topoCordas;
+      desenharAcorde();
+    }
+
+    function excluirAcorde(nome) {
+      if (confirm(`Deseja excluir o acorde '${nome}'?`)) {
+        localStorage.removeItem(`acorde-${nome}`);
+        atualizarLista();
+        mostrarSnackbar("Acorde excluído!");
+      }
+    }
+
+    function filtrarLista() {
+      const termo = document.getElementById("buscaAcorde").value.trim().toLowerCase();
+      const lista = document.getElementById("listaAcordesContainer").children;
+
+      Array.from(lista).forEach(div => {
+        const nome = div.querySelector("span").textContent.trim().toLowerCase();
+        div.style.display = nome === termo ? "flex" : "none";
+      });
+    }
+
+    function desenharShape(data) {
+      const casaBase = calcularCasaBase(data.frets);
+      const trasteInicial = casaBase > 1 ? casaBase : 1;
+
+      document.getElementById("acorde").value = data.name;
+      document.getElementById("casa").value = trasteInicial;
+
+      dedos = [];
+      topoCordas = [0, 0, 0, 0, 0, 0];
+
+      nomeEditando = data.name;
+      indiceEditando = data.variation;
+
+      [...data.frets].forEach((f, idx) => {
+        if (f === "x") topoCordas[idx] = 2;
+        else if (f === "0") topoCordas[idx] = 0;
+        else {
+          const fretNum = parseInt(f, 36);
+          const y = 100 + (fretNum - trasteInicial) * espacamento + espacamento / 2;
+          const x = 50 + idx * (largura / (cordas - 1));
+          dedos.push({ x, y, finger: data.fingers[idx] !== "0" ? data.fingers[idx] : "" });
         }
+      });
 
-        function desenharBolinhasBase(corda) {
-            const x = 50 + corda * (largura / (cordas - 1));
-            const y = 100 + altura + 20;
-            ctx.beginPath();
-            if (topoCordas[corda] === 0) {
-                ctx.strokeStyle = "black";
-                ctx.lineWidth = 2;
-                ctx.arc(x, y, 8, 0, Math.PI * 2);
-                ctx.stroke();
-            } else if (topoCordas[corda] === 1) {
-                ctx.fillStyle = "black";
-                ctx.arc(x, y, 8, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (topoCordas[corda] === 2) {
-                ctx.font = "14px Arial";
-                ctx.fillStyle = "black";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText("X", x, y);
-            }
-        }
+      desenharAcorde();
+    }
 
-        canvas.addEventListener("click", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const corda = Math.round((x - 50) / (largura / (cordas - 1)));
-            if (y >= 100 + altura + 10 && y <= 100 + altura + 30 && corda >= 0 && corda < 6) {
-                topoCordas[corda] = (topoCordas[corda] + 1) % 3;
-            } else {
-                adicionarDedo(x, y);
-            }
-            desenharAcorde();
-        });
+    function calcularCasaBase(frets) {
+      const casas = [...frets].filter(f => f !== "x" && f !== "0").map(f => parseInt(f, 36));
+      return Math.min(...casas);
+    }
 
-        function adicionarDedo(x, y) {
-            const casaY = Math.round((y - 100) / espacamento) * espacamento + 100;
-            const cordaX = Math.round((x - 50) / (largura / (cordas - 1))) * (largura / (cordas - 1)) + 50;
-            if (cordaX >= 50 && cordaX <= 300 && casaY >= 100 && casaY <= 100 + altura) {
-                const finger = dedos.length + 1;
-                dedos.push({ x: cordaX, y: casaY, finger });
-            }
-        }
-
-        function limparAcorde() {
-            dedos.length = 0;
-            topoCordas.fill(0);
-            desenharAcorde();
-        }
-
-        function copiarDesenho() {
-            const snackbar = document.getElementById("snackbar");
-            const btn = document.getElementById("copiarBtn");
-            canvas.toBlob(blob => {
-                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-                    .then(() => {
-                        snackbar.classList.add("show");
-                        btn.disabled = true;
-                        setTimeout(() => {
-                            snackbar.classList.remove("show");
-                            btn.disabled = false;
-                        }, 6000);
-                    });
-            });
-        }
-
-        desenharAcorde();
-    </script>
+    atualizarLista();
+    desenharAcorde();
+  </script>
 </body>
 </html>
